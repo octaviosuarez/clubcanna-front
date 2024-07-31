@@ -11,7 +11,7 @@ import MisPedidos from '../Pedidos/MisPedidos';
 import { useEffect, useState } from 'react';
 import Pedido from '../Pedidos/Pedido';
 import useStore from '../../store/useStore';
-import { user } from '@nextui-org/react';
+import Deudores from '../Deudores';
 
 function RoutesManager() {
 
@@ -29,7 +29,6 @@ function RoutesManager() {
         };
     }, []);
 
-    console.log(userData?.level)
     return (
         <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} w-screen`}>
             {location.pathname !== '/login' && <Sidebar isMobile={isMobile} />}
@@ -57,6 +56,12 @@ function RoutesManager() {
                         <MisPedidos />
                     </PrivateRoute>} />
                     <Route path="/pedidos/:id" element={<PrivateRoute required="user">
+                        <Pedido />
+                    </PrivateRoute>} />
+                    <Route path="/deudores" element={<PrivateRoute required="admin">
+                        <Deudores />
+                    </PrivateRoute>} />
+                    <Route path="/deudores/:id" element={<PrivateRoute required="admin">
                         <Pedido />
                     </PrivateRoute>} />
                     <Route path="*" element={<Navigate to={userData?.level === 'admin' ? '/socios' : '/mis-pedidos'} replace={true} />} />

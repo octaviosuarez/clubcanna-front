@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import useStore from '../../../store/useStore';
-import { stockTestData } from '../../Stock/stockData';
 import { crearPedido, obtenerStock } from '../../../api/api';
 
 const Pedido = () => {
@@ -15,7 +14,8 @@ const Pedido = () => {
         cedula: userData?.level === 'admin' ? '' : userData?.cedula,
         idRaza: '',
         gramos: '',
-        despachado: false
+        despachado: false,
+        pago_realizado: false
     })
 
     const [stock, setStock] = useState([])
@@ -50,8 +50,8 @@ const Pedido = () => {
 
         let gramos = parseInt(pedido.gramos)
         let stockRaza = stock.find(raza => raza.id === parseInt(pedido.idRaza))?.stock
-        
-        if(!stockRaza) {
+
+        if (!stockRaza) {
             toast.error('La raza no tiene stock')
             return
         }
@@ -72,6 +72,7 @@ const Pedido = () => {
                 id_producto: pedido.idRaza,
                 cantidad: pedido.gramos,
                 despachado: pedido.despachado ? 1 : 0,
+                pago_realizado: pedido.pago_realizado ? 1 : 0,
                 //Date in format YYYY-MM-DD
                 fecha_pedido: new Date().toISOString().split('T')[0]
             }
@@ -118,6 +119,14 @@ const Pedido = () => {
                     isDisabled={userData?.level !== 'admin'}
                 >
                     Despachado
+                </Checkbox>}
+                {((userData?.level === 'user' && id !== 'nuevo') || userData?.level === 'admin') && <Checkbox
+                    label="Pagado"
+                    checked={pedido.pago_realizado}
+                    onChange={(e) => setPedido({ ...pedido, pago_realizado: e.target.checked })}
+                    isDisabled={userData?.level !== 'admin'}
+                >
+                    Pagado
                 </Checkbox>}
                 <Divider />
                 <div className="flex items-center justify-center w-full mt-2">

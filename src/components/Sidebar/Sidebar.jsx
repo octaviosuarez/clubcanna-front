@@ -1,5 +1,5 @@
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Link, User } from "@nextui-org/react";
-import { TbSunHigh, TbMoonFilled, TbUsers, TbBox, TbLogout, TbMenu2, TbBrandItch } from "react-icons/tb";
+import { TbSunHigh, TbMoonFilled, TbUsers, TbBox, TbLogout, TbMenu2, TbBrandItch, TbCash } from "react-icons/tb";
 import useStore from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -33,6 +33,13 @@ const sidebarOptions = [
         icon: <TbBrandItch size={25} className="ml-4" />,
         required: 'user',
         description: capitalize('mis pedidos')
+    },
+    {
+        id: 'deudores',
+        link: '/deudores',
+        icon: <TbCash size={25} className="ml-4" />,
+        required: 'admin',
+        description: capitalize('deudores')
     }
 ];
 

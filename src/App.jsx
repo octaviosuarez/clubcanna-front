@@ -6,10 +6,7 @@ import useStore from './store/useStore';
 import { NextUIProvider } from '@nextui-org/react'
 
 function App() {
-
   const { theme } = useStore();
-
-
   return (
     <>
       <NextUIProvider theme={theme}>
@@ -18,7 +15,6 @@ function App() {
             <RoutesManager />
           </main>
         </BrowserRouter>
-
         <ToastContainer
           position="bottom-right"
           autoClose={3500}
