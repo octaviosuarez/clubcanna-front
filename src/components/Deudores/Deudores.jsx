@@ -1,42 +1,95 @@
 import { useEffect, useState } from 'react';
 import Grid from '../Grid'
 import { useNavigate } from 'react-router-dom'
-import { obtenerSocios } from '../../api/api';
+import { listarSociosConDeudaNoPaga, listarSociosConDeudaPaga, listarPedidosQueTienenDeuda, listarPedidosQueTienenDeudaPagada, listarPedidosQueTienenDeudaNoPagada } from '../../api/api';
 import { Tabs, Tab } from '@nextui-org/react';
 import './Deudores.css'
 
+const columnasSocios = [
+    { field: "cedula", headerName: "Cédula", maxWidth: 120 },
+    { field: "nombre_completo", minWidth: 150, headerName: "Nombre" },
+    { field: "email" },
+    { field: "saldo_negativo", headerName: "Saldo negativo", minWidth: 150 },
+]
+
+const columnasPedidos = [
+    { field: "id", headerName: "ID", maxWidth: 120 },
+    { field: "cedula_socio", headerName: "Cédula", maxWidth: 120 },
+    { field: "id_producto", headerName: "ID Producto" },
+    { field: "cantidad", headerName: "Cantidad", maxWidth: 120 },
+    { field: "fecha", headerName: "Fecha" },
+    { field: "despachado", headerName: "Despachado" },
+    { field: "pago_realizado", headerName: "Pago realizado", },
+    { field: "monto", headerName: "Monto" },
+]
+
 const Deudores = () => {
-
     const navigate = useNavigate();
-    const [socios, setSocios] = useState([])
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-
-    const columns = [
-        { field: "cedula", headerName: "Cédula", maxWidth: 120 },
-        { field: "nombre_completo", minWidth: 150, headerName: "Nombre" },
-        //{ field: "telefono", headerName: "Teléfono", maxWidth: 150 },
-        { field: "email" },
-        { field: "consumo_mensual", headerName: "Consumo mensual", minWidth: 170 },
-        { field: "es_deudor", headerName: "Deudor", minWidth: 120, cellRenderer: 'agCheckboxCellRenderer' }
-    ]
+    const [listas, setListas] = useState({
+        sociosConDeudasInpagas: {
+            columns: columnasSocios,
+            data: null
+        },
+        sociosConDeudasPagas: {
+            columns: columnasSocios,
+            data: null
+        },
+        pedidosConDeuda: {
+            columns: columnasPedidos,
+            data: null
+        },
+        pedidosConDeudasPagas: {
+            columns: columnasPedidos,
+            data: null
+        },
+        pedidosConDeudasInpagas: {
+            columns: columnasPedidos,
+            data: null
+        },
+    });
 
     useEffect(() => {
-        obtenerSocios().then((res) => {
-            let newSocios = res.data.map(socio => {
-                socio.es_deudor = socio.es_deudor === 1 ? true : false
-                return socio
+        Promise.all([
+            listarSociosConDeudaNoPaga(),
+            listarSociosConDeudaPaga(),
+            listarPedidosQueTienenDeuda(),
+            listarPedidosQueTienenDeudaPagada(),
+            listarPedidosQueTienenDeudaNoPagada()
+        ]).then(res => {
+            setListas({
+                sociosConDeudasInpagas: {
+                    columns: columnasSocios,
+                    data: res[0]?.data
+                },
+                sociosConDeudasPagas: {
+                    columns: columnasSocios,
+                    data: res[1]?.data
+                },
+                pedidosConDeuda: {
+                    columns: columnasPedidos,
+                    data: res[2]?.data
+                },
+                pedidosConDeudasPagas: {
+                    columns: columnasPedidos,
+                    data: res[3]?.data
+                },
+                pedidosConDeudasInpagas: {
+                    columns: columnasPedidos,
+                    data: res[4]?.data
+                },
             })
-            setSocios(newSocios)
-        });
+        })
     }, [])
 
 
-    const onRowDoubleClick = (data) => {
-        navigate(`/socios/${data.cedula}`)
-    }
-
-    const onNewSocio = () => {
-        navigate('/socios/nuevo')
+    const onRowDoubleClick = (data, tipo) => {
+        if (tipo === 'socio') {
+            navigate(`/socios/${data.cedula}`)
+        }
+        if (tipo === 'pedido') {
+            navigate(`/pedidos/${data.id}`)
+        }
     }
 
     useEffect(() => {
@@ -60,37 +113,37 @@ const Deudores = () => {
                 }}>
                     <Tab key="deudas_no_pagas" title="Deudas no pagas">
                         <Grid
-                            columns={columns}
-                            data={socios}
-                            onDoubleClick={onRowDoubleClick}
+                            columns={listas?.sociosConDeudasInpagas?.columns}
+                            data={listas?.sociosConDeudasInpagas?.data}
+                            onDoubleClick={(data) => onRowDoubleClick(data, 'socio')}
                         />
                     </Tab>
                     <Tab key="deudas_pagas" title="Deudas pagas">
                         <Grid
-                            columns={columns}
-                            data={socios}
-                            onDoubleClick={onRowDoubleClick}
+                            columns={listas?.sociosConDeudasPagas?.columns}
+                            data={listas?.sociosConDeudasPagas?.data}
+                            onDoubleClick={(data) => onRowDoubleClick(data, 'socio')}
                         />
                     </Tab>
                     <Tab key="pedidos_deuda" title="Pedidos con deuda">
                         <Grid
-                            columns={columns}
-                            data={socios}
-                            onDoubleClick={onRowDoubleClick}
+                            columns={listas?.pedidosConDeuda?.columns}
+                            data={listas?.pedidosConDeuda?.data}
+                            onDoubleClick={(data) => onRowDoubleClick(data, 'pedido')}
                         />
                     </Tab>
                     <Tab key="pedidos_deuda1" title="Pedidos con deudas pagas">
                         <Grid
-                            columns={columns}
-                            data={socios}
-                            onDoubleClick={onRowDoubleClick}
+                            columns={listas?.pedidosConDeudasPagas?.columns}
+                            data={listas?.pedidosConDeudasPagas?.data}
+                            onDoubleClick={(data) => onRowDoubleClick(data, 'pedido')}
                         />
                     </Tab>
                     <Tab key="pedidos_deuda2" title="Pedidos con deudas inpagas">
                         <Grid
-                            columns={columns}
-                            data={socios}
-                            onDoubleClick={onRowDoubleClick}
+                            columns={listas?.pedidosConDeudasInpagas?.columns}
+                            data={listas?.pedidosConDeudasInpagas?.data}
+                            onDoubleClick={(data) => onRowDoubleClick(data, 'pedido')}
                         />
                     </Tab>
                 </Tabs>

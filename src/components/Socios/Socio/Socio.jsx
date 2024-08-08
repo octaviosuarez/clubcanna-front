@@ -11,18 +11,18 @@ const Socio = () => {
         email: "",
         //telefono: "",
         consumo_mensual: '',
-        es_deudor: false
+        es_deudor: false,
+        saldo_negativo: ''
     })
     const { cedula } = useParams();
     const [loading, setLoading] = useState(true)
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(cedula !== 'nuevo') {
+        if (cedula !== 'nuevo') {
             obtenerSocio(cedula).then((res) => {
                 let newUserData = res?.data[0];
                 newUserData.es_deudor = newUserData.es_deudor === 1 ? true : false
-                console.log(newUserData)
                 setUser(newUserData)
             }).finally(() => {
                 setLoading(false)
@@ -53,7 +53,7 @@ const Socio = () => {
         }
     }
 
-    
+
     return (
         <div className="flex flex-col items-center justify-center h-full">
             <div className="flex flex-col w-full max-w-[600px] gap-4 p-6 sm:border rounded-md">
@@ -64,6 +64,7 @@ const Socio = () => {
                 <Input variant="underlined" size={'sm'} placeholder="Ingrese email" labelPlacement={'outside'} label="Email" onChange={(e) => setUser({ ...user, email: e.target.value })} value={user.email} />
                 {/*<Input variant="underlined" size={'sm'} placeholder="Ingrese teléfono" labelPlacement={'outside'} label="Teléfono" onChange={(e) => setUser({ ...user, telefono: e.target.value })} value={user.telefono} />*/}
                 <Input variant="underlined" size={'sm'} placeholder="Ingrese consumo mensual" labelPlacement={'outside'} label="Consumo mensual" onChange={(e) => setUser({ ...user, consumo_mensual: e.target.value })} value={user.consumo_mensual} />
+                <Input variant="underlined" size={'sm'} labelPlacement={'outside'} label="Saldo negativo" onChange={(e) => setUser({ ...user, saldo_negativo: e.target.value })} value={user.saldo_negativo} />
 
                 <Checkbox
                     label="Es deudor"

@@ -1,5 +1,5 @@
 import axios from 'axios';
-const URL = 'http://localhost:443';
+const URL = 'http://192.168.0.10:443';
 
 axios.defaults.baseURL = URL;
 
@@ -110,6 +110,46 @@ export const obtenerPedidos = async () => {
     const options = {
         method: 'GET',
         url: '/getPedidos'
+    };
+    return axios.request(options);
+}
+
+export const listarSociosConDeudaNoPaga = async () => {
+    const options = {
+        method: 'POST',
+        url: '/listarSociosConDeudaNoPaga'
+    };
+    return axios.request(options);
+}
+
+export const listarSociosConDeudaPaga = async () => {
+    const options = {
+        method: 'POST',
+        url: '/listarSociosConDeudaPaga'
+    };
+    return axios.request(options);
+}
+
+export const listarPedidosQueTienenDeuda = async () => {
+    const options = {
+        method: 'POST',
+        url: '/listarPedidosQueTienenDeuda'
+    };
+    return axios.request(options);
+}
+
+export const listarPedidosQueTienenDeudaPagada = async () => {
+    const options = {
+        method: 'POST',
+        url: '/listarPedidosQueTienenDeudaPagada'
+    };
+    return axios.request(options);
+}
+
+export const listarPedidosQueTienenDeudaNoPagada = async () => {
+    const options = {
+        method: 'POST',
+        url: '/listarPedidosQueTienenDeudaNoPagada'
     };
     return axios.request(options);
 }

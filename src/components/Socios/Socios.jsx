@@ -11,11 +11,12 @@ const Socios = () => {
 
     const columns = [
         { field: "cedula", headerName: "Cédula", maxWidth: 120 },
-        { field: "nombre_completo", minWidth: 150, headerName: "Nombre"},
+        { field: "nombre_completo", minWidth: 150, headerName: "Nombre" },
         //{ field: "telefono", headerName: "Teléfono", maxWidth: 150 },
         { field: "email" },
         { field: "consumo_mensual", headerName: "Consumo mensual", minWidth: 170 },
-        { field: "es_deudor", headerName: "Deudor", minWidth: 120, cellRenderer: 'agCheckboxCellRenderer'}
+        { field: "es_deudor", headerName: "Deudor", minWidth: 120, cellRenderer: 'agCheckboxCellRenderer' },
+        { field: "saldo_negativo", headerName: "Saldo negativo", minWidth: 170 }
     ]
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const Socios = () => {
             setSocios(newSocios)
         });
     }, [])
-    
+
 
     const onRowDoubleClick = (data) => {
         navigate(`/socios/${data.cedula}`)
