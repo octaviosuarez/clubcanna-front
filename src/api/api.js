@@ -217,3 +217,22 @@ export const getProductosAlimentacionBySemana = async (idSemana) => {
   };
   return axios.request(options);
 };
+
+export const getFirmasBySemana = async (idSemana) => {
+  //getFirmasBySemana
+  const options = {
+    method: "GET",
+    url: `/getFirmasBySemana/${idSemana}`,
+  };
+  return axios.request(options);
+}	
+
+export const addFirmaProducto = async (firma) => {
+  //addFirmaProducto
+  const options = {
+    method: "POST",
+    url: "/addFirmaProducto",
+    data: firma,
+  };
+  return axios.request(options);
+};

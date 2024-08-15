@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Grid from "../Grid";
-import { Tabs, Tab, Button } from "@nextui-org/react";
+import { Tabs, Tab, Button, CircularProgress } from "@nextui-org/react";
 import { useDisclosure } from "@nextui-org/react";
 import {
   getSemanas,
@@ -8,9 +8,12 @@ import {
   getProductosAlimentacion,
   getProductoAlimentacionById,
   getProductosAlimentacionBySemana,
+  getFirmasBySemana,
+  addFirmaProducto,
 } from "../../api/api";
 import { useParams } from "react-router-dom";
 import ModalsAlimentacion from "./ModalsAlimentacion";
+import { FaPencilAlt } from "react-icons/fa";
 
 const Alimentacion = () => {
   const { idPlanta, nombrePlanta } = useParams();
@@ -20,7 +23,9 @@ const Alimentacion = () => {
   const [prodAlimentacionGrid, setProdAlimentacionGrid] = useState([]);
   const [prodXSemana, setProdXSemana] = useState([]);
   const [columns, setColumns] = useState([]);
-
+  const [loading, setLoading] = useState(false);
+  const [rowData, setRowData] = useState([]);
+  const [rowSelected, setRowSelected] = useState(null);
   useEffect(() => {
     getSemanas().then((res) => {
       setSemanas(res.data);
@@ -29,23 +34,89 @@ const Alimentacion = () => {
 
   const getProductosBySemana = async (idSemana) => {
     try {
+      setColumns([]);
+      setLoading(true);
       const res = await getProductosAlimentacionBySemana(idSemana);
-      const columnas = [];
+      const columnasProductos = [];
       for (const x of res.data) {
         const nombreProducto = await getProductoAlimentacionById(x.idProducto);
-        columnas.push({
-          field: nombreProducto.data[0].nombreProducto,
+        columnasProductos.push({
+          field: nombreProducto.data[0].idProducto.toString(),
           headerName: nombreProducto.data[0].nombreProducto,
+          maxWidth: 150,
         });
       }
+
+      const columnas = [
+        { field: "fecha", headerName: "FECHA", maxWidth: 200 },
+        {
+          headerName: "Productos",
+          children: columnasProductos,
+        },
+        { field: "observaciones", headerName: "OBSERVACIONES", maxWidth: 200 },
+        {
+          field: "action",
+          headerName: "FIRMA",
+          maxWidth: 200,
+          cellRenderer: (props) => {
+            return (
+              <div className="flex w-full h-full justify-center items-center">
+                <Button
+                  color="primary"
+                  variant="ghost"
+                  size="sm"
+                  startContent={<FaPencilAlt />}
+                  onClick={() => handleFirmaProducto(props)}
+                >
+                  Firmar
+                </Button>
+              </div>
+            );
+          },
+        },
+        { field: "responsable", headerName: "RESPONSABLE", maxWidth: 200 },
+      ];
+
       setColumns(columnas);
+      setLoading(false);
     } catch (error) {
-      console.error("Error en getProductosBySemana: ", error);
+      console.error(error);
+      setLoading(false);
     }
+  };
+  const handleFirmaProducto = (props) => {
+    const productos = [];
+    for (const key in props.data) {
+      if (
+        !["fecha", "idSemanaProducto", "idPlanta", "idJardinero"].includes(key)
+      ) {
+        productos.push({
+          idProducto: parseInt(key),
+          cantidad: props.data[key],
+        });
+      }
+    }
+
+    productos.forEach((producto) => {
+      let data = {
+        fecha: props.data.fecha,
+        idProducto: producto.idProducto,
+        cantidadProducto: producto.cantidad,
+      };
+      addFirmaProducto(data).then((res) => {
+        console.log(res);
+      });
+    });
   };
 
   const handleTabSelected = (tabSelected) => {
     getProductosBySemana(parseInt(tabSelected));
+    getFirmasBySemana(parseInt(tabSelected)).then((res) => {
+      res.data.map((x, idx) => {
+        x.fecha = x.fecha.split("T")[0];
+      });
+      setRowData(res.data);
+    });
   };
 
   return (
@@ -65,7 +136,6 @@ const Alimentacion = () => {
               });
             }}
             color="primary"
-            variant="ghost"
           >
             Productos
           </Button>
@@ -86,7 +156,6 @@ const Alimentacion = () => {
               onOpen();
             }}
             color="primary"
-            variant="ghost"
           >
             Productos x Semana
           </Button>
@@ -97,7 +166,12 @@ const Alimentacion = () => {
           <Tab key={x.idSemana} title={x.nombreSemana} className="w-full">
             <div className="flex flex-col w-full">
               <p className="text-2xl font-semibold">{x.nombreSemana}</p>
-              <Grid className="w-full" columns={columns} data={[]} />
+              <Grid
+                className="w-full"
+                columns={columns}
+                data={rowData}
+                setRowSelected={setRowSelected}
+              />
             </div>
           </Tab>
         ))}
@@ -112,7 +186,13 @@ const Alimentacion = () => {
         setProdAlimentacionGrid={setProdAlimentacionGrid}
         setSemanas={setSemanas}
         semanas={semanas}
+        setLoading={setLoading}
       />
+      {loading && (
+        <div className="absolute">
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 };

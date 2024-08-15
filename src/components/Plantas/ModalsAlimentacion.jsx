@@ -24,6 +24,7 @@ const ModalsAlimentacion = ({
   setProdAlimentacionGrid,
   setSemanas,
   semanas,
+  setLoading,
 }) => {
   const [producto, setProducto] = useState(new Set([]));
   const [productosAlimentacion, setProductosAlimentacion] = useState([]);
@@ -31,14 +32,8 @@ const ModalsAlimentacion = ({
   const [prodAlimentacionTxt, setProdAlimentacionTxt] = useState("");
 
   useEffect(() => {
-    console.log("Hola");
-
-    getSemanas().then((res) => {
-      setSemanas(res.data);
-    });
     getProductosAlimentacion().then((res) => {
-      console.log("res", res);
-      setProductosAlimentacion(res.data); 
+      setProductosAlimentacion(res.data);
     });
   }, []);
 
@@ -198,9 +193,7 @@ const ModalsAlimentacion = ({
                       onSelectionChange={setProducto}
                     >
                       {productosAlimentacion.map((x) => (
-                        <SelectItem
-                          key={x.idProducto}
-                        >
+                        <SelectItem key={x.idProducto}>
                           {x.nombreProducto}
                         </SelectItem>
                       ))}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { addPlanta, getPlantas } from "../../api/api";
 import Grid from "../Grid";
-import { CiStar } from "react-icons/ci";
+import { FaCannabis } from "react-icons/fa";
 import {
   Button,
   Modal,
@@ -30,17 +30,16 @@ const Plantas = () => {
     { field: "fechaCreacion", headerName: "Fecha creacion" },
     {
       field: "actions",
-      headerName: "Acciones",
+      headerName: "",
       cellRenderer: (props) => {
         return (
-          <>
-            <CiStar
+          <div className="flex w-full h-full justify-center items-center">
+            <FaCannabis
               className="cursor-pointer"
               size={20}
-              color="red"
               onClick={() => goToAlimentacion(props.data.idPlanta, props.data.nombrePlanta)}
             />
-          </>
+          </div>
         );
       },
     },
@@ -58,9 +57,7 @@ const Plantas = () => {
 
   const handleAddPlanta = () => {
     const { year, month, day } = fechaCreacion;
-    const formattedDate = `${String(day).padStart(2, "0")}/${String(
-      month
-    ).padStart(2, "0")}/${year}`;
+    const formattedDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     let newPlanta = {
       nombrePlanta,
       fechaCreacion: formattedDate,
@@ -85,7 +82,6 @@ const Plantas = () => {
             onOpen();
           }}
           color="primary"
-          variant="ghost"
         >
           Crear nueva planta
         </Button>
