@@ -15,6 +15,7 @@ import {
   TbLogout,
   TbMenu2,
   TbBrandItch,
+  TbCash,
 } from "react-icons/tb";
 import useStore from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +50,13 @@ const sidebarOptions = [
     icon: <TbBrandItch size={25} className="ml-4" />,
     required: "user",
     description: capitalize("mis pedidos"),
+  },
+  {
+    id: "deudores",
+    link: "/deudores",
+    icon: <TbCash size={25} className="ml-4" />,
+    required: "admin",
+    description: capitalize("deudores"),
   },
   {
     id: "plantas",
