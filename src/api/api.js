@@ -153,3 +153,45 @@ export const listarPedidosQueTienenDeudaNoPagada = async () => {
     };
     return axios.request(options);
 }
+
+export const obtenerPedido = async (id) => {
+    const options = {
+        method: 'GET',
+        url: `/getPedido/${id}`
+    };
+    return axios.request(options);
+}
+
+export const actualizarPedido = async (pedido) => {
+    const options = {
+        method: 'PUT',
+        url: `/updatePedido/${pedido.id}`,
+        data: pedido
+    };
+    return axios.request(options);
+}
+
+export const crearDeuda = async (deuda) => {
+    const options = {
+        method: 'POST',
+        url: '/crearDeuda',
+        data: deuda
+    };
+    return axios.request(options);
+}
+
+export const eliminarDeuda = async (id) => {
+    const options = {
+        method: 'DELETE',
+        url: `/eliminarDeuda/${id}`
+    };
+    return axios.request(options);
+}
+
+export const obtenerDeudaPorIdPedido = async (id) => {
+    const options = {
+        method: 'GET',
+        url: `/obtenerDeudaPorIdPedido/${id}`
+    };
+    return axios.request(options);
+}

@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { listarSociosConDeudaNoPaga, listarSociosConDeudaPaga, listarPedidosQueTienenDeuda, listarPedidosQueTienenDeudaPagada, listarPedidosQueTienenDeudaNoPagada } from '../../api/api';
 import { Tabs, Tab } from '@nextui-org/react';
 import './Deudores.css'
+import { parse } from 'postcss';
 
 const columnasSocios = [
     { field: "cedula", headerName: "Cédula", maxWidth: 120 },
     { field: "nombre_completo", minWidth: 150, headerName: "Nombre" },
     { field: "email" },
-    { field: "saldo_negativo", headerName: "Saldo negativo", minWidth: 150 },
+    { field: "saldo_negativo", headerName: "Saldo negativo", minWidth: 150 }
 ]
 
 const columnasPedidos = [
@@ -17,10 +18,19 @@ const columnasPedidos = [
     { field: "cedula_socio", headerName: "Cédula", maxWidth: 120 },
     { field: "id_producto", headerName: "ID Producto" },
     { field: "cantidad", headerName: "Cantidad", maxWidth: 120 },
-    { field: "fecha", headerName: "Fecha" },
-    { field: "despachado", headerName: "Despachado" },
-    { field: "pago_realizado", headerName: "Pago realizado", },
+    {
+        field: "fecha_pedido", headerName: 'Fecha', minWidth: 150, cellRenderer: (data) => {
+            if (data.value && data.value !== "0000-00-00") {
+                return new Date(data.value).toLocaleDateString()
+            } else {
+                return ''
+            }
+        }
+    },
+    { field: "despachado", headerName: "Despachado", cellRenderer: 'agCheckboxCellRenderer' },
+    { field: "pago_realizado", headerName: "Pago realizado", cellRenderer: 'agCheckboxCellRenderer' },
     { field: "monto", headerName: "Monto" },
+    { field: "id_pedido", headerName: "ID Pedido", maxWidth: 120, hide: true }
 ]
 
 const Deudores = () => {
@@ -49,6 +59,14 @@ const Deudores = () => {
         },
     });
 
+    const parseCheckboxs = (data) => {
+        return data.map(d => {
+            d.despachado = d.despachado === 1 ? true : false
+            d.pago_realizado = d.pago_realizado === 1 ? true : false
+            return d
+        })
+    }
+
     useEffect(() => {
         Promise.all([
             listarSociosConDeudaNoPaga(),
@@ -68,15 +86,15 @@ const Deudores = () => {
                 },
                 pedidosConDeuda: {
                     columns: columnasPedidos,
-                    data: res[2]?.data
+                    data: parseCheckboxs(res[2]?.data)
                 },
                 pedidosConDeudasPagas: {
                     columns: columnasPedidos,
-                    data: res[3]?.data
+                    data: parseCheckboxs(res[3]?.data)
                 },
                 pedidosConDeudasInpagas: {
                     columns: columnasPedidos,
-                    data: res[4]?.data
+                    data: parseCheckboxs(res[4]?.data)
                 },
             })
         })
@@ -88,7 +106,7 @@ const Deudores = () => {
             navigate(`/socios/${data.cedula}`)
         }
         if (tipo === 'pedido') {
-            navigate(`/pedidos/${data.id}`)
+            navigate(`/pedidos/${data.idPedido}`)
         }
     }
 
@@ -105,7 +123,7 @@ const Deudores = () => {
 
 
     return (
-        <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 sm:p-4 xl:p-12">
+        <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 xl:pt-16 xl:justify-start sm:p-4 xl:p-12">
             <h1 className="text-4xl">Deudores</h1>
             <div className="flex flex-col justify-center w-full">
                 <Tabs className="justify-center" aria-label="Options" classNames={{

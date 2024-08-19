@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import useStore from '../../../store/useStore';
-import { crearPedido, obtenerStock } from '../../../api/api';
+import { crearDeuda, crearPedido, eliminarDeuda, obtenerDeudaPorIdPedido, obtenerPedido, obtenerStock } from '../../../api/api';
 
 const Pedido = () => {
 
@@ -17,10 +17,15 @@ const Pedido = () => {
         despachado: false,
         pago_realizado: false
     })
+    const { id } = useParams();
+
+    const [loading, setLoading] = useState(true)
+
+    const [estabaPago, setEstabaPago] = useState(false)
 
     const [stock, setStock] = useState([])
 
-    const { id } = useParams();
+
 
     useEffect(() => {
         loadData();
@@ -30,6 +35,22 @@ const Pedido = () => {
         let res = await obtenerStock()
         const razas = res?.data;
         setStock(razas)
+        //cargar pedido
+
+        if (id !== 'nuevo') {
+            let pedido = await obtenerPedido(id);
+            pedido = pedido.data;
+            setPedido({
+                cedula: pedido.cedula_socio,
+                idRaza: pedido.id_producto.toString(),
+                gramos: pedido.cantidad,
+                despachado: pedido.despachado === 1,
+                pago_realizado: pedido.pago_realizado === 1
+            });
+        }
+
+        setLoading(false)
+        // setear estabaPago
     }
 
     const handleSubmit = async (e) => {
@@ -76,10 +97,26 @@ const Pedido = () => {
                 //Date in format YYYY-MM-DD
                 fecha_pedido: new Date().toISOString().split('T')[0]
             }
-            await crearPedido(newPedido)
+            let pedidoCreado = await crearPedido(newPedido);
+            console.log(pedidoCreado?.data?.pedido)
+
+            if (!pedido.pago_realizado) {
+                let deuda = {
+                    idPedido: pedidoCreado?.data?.pedido?.id,
+                    monto: parseInt(pedido.gramos) * stock.find(raza => raza.id === parseInt(pedido.idRaza)).precio
+                }
+                console.log(deuda);
+                await crearDeuda(deuda)
+            }
             toast.success('Pedido creado correctamente')
         } else {
-            // await actualizarSocio(pedido
+            if (!estabaPago && pedido.pago_realizado) {
+                let deuda = await obtenerDeudaPorIdPedido(id);
+                deuda = deuda.data;
+                if (deuda) {
+                    await eliminarDeuda(deuda.id)
+                }
+            }
             toast.success('Pedido actualizado correctamente')
         }
 
@@ -88,11 +125,12 @@ const Pedido = () => {
         } else {
             navigate('/pedidos')
         }
-
     }
 
+    console.log(pedido)
+
     return (
-        <div className="flex flex-col items-center justify-center h-full">
+        stock && !loading && <div className="flex flex-col items-center justify-center h-full">
             <div className="flex flex-col w-full max-w-[600px] gap-4 p-6 sm:border rounded-md">
                 <p className="w-full mb-2 text-3xl text-center">Datos del pedido</p>
                 <Divider />
@@ -101,6 +139,9 @@ const Pedido = () => {
                 <Select
                     variant="underlined"
                     label="Selecciona una raza"
+                    labelPlacement={'outside'}
+                    defaultSelectedKeys={[pedido.idRaza]}
+                    selectedKeys={[pedido.idRaza]}
                     onChange={(e) => setPedido({ ...pedido, idRaza: e.target.value })}
                 >
                     {stock?.map((raza) => (
@@ -114,7 +155,7 @@ const Pedido = () => {
 
                 {((userData?.level === 'user' && id !== 'nuevo') || userData?.level === 'admin') && <Checkbox
                     label="Despachado"
-                    checked={pedido.despachado}
+                    isSelected={pedido.despachado}
                     onChange={(e) => setPedido({ ...pedido, despachado: e.target.checked })}
                     isDisabled={userData?.level !== 'admin'}
                 >
@@ -122,7 +163,7 @@ const Pedido = () => {
                 </Checkbox>}
                 {((userData?.level === 'user' && id !== 'nuevo') || userData?.level === 'admin') && <Checkbox
                     label="Pagado"
-                    checked={pedido.pago_realizado}
+                    isSelected={pedido.pago_realizado}
                     onChange={(e) => setPedido({ ...pedido, pago_realizado: e.target.checked })}
                     isDisabled={userData?.level !== 'admin'}
                 >
@@ -134,6 +175,7 @@ const Pedido = () => {
                 </div>
             </div>
         </div>
+
     )
 }
 

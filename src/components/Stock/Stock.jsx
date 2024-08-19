@@ -15,7 +15,7 @@ const Stock = () => {
         { field: "precio", headerName: "Precio" },
         { field: "stock" }
     ]
-    
+
     useEffect(() => {
         obtenerStock().then((res) => {
             setStock(res.data)
@@ -33,7 +33,7 @@ const Stock = () => {
 
 
     return (
-        <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 sm:p-4 xl:p-12">
+        <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 xl:pt-16 xl:justify-start sm:p-4 xl:p-12">
             <h1 className="text-4xl">Stock de razas</h1>
             <div className="flex flex-col items-center justify-center w-full gap-4 xl:">
                 <div className="md:self-end">

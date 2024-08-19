@@ -1,4 +1,4 @@
-import { Divider, Input, Button, Select, SelectItem } from '@nextui-org/react';
+import { Divider, Input, Button } from '@nextui-org/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
@@ -81,42 +81,42 @@ const Raza = () => {
                 <Input type="number" variant="underlined" size={'sm'} placeholder="Ingrese stock actual" labelPlacement={'outside'} label="Stock" onChange={(e) => setRaza({ ...raza, stock: e.target.value })} value={raza.stock} />
                 <Divider />
 
-                {id !== 'nuevo' && 
-                <>
-                    <div className="flex flex-col items-center justify-center gap-4">
-                        <h2>Manejo de stock</h2>
-                        <Divider />
-                        <div className="flex flex-col items-center justify-center w-full gap-4 sm:flex-row">
-                            <Input
-                                placeholder="0.00"
-                                labelPlacement="outside"
-                                onChange={(e) => setValor(e.target.value)}
-                                endContent={
-                                    <div className="flex items-center">
-                                        <label className="sr-only" htmlFor="type">
-                                            Tipo
-                                        </label>
-                                        <select
-                                            className="bg-transparent border-0 outline-none text-default-400 text-small"
-                                            id="type"
-                                            name="type"
-                                            onChange={(e) => setOpcion(e.target.value)}
-                                        >
-                                            <option value="aumentar">Aumentar</option>
-                                            <option value="descontar">Descontar</option>
-                                        </select>
-                                    </div>
-                                }
-                                type="number"
-                            />
-                            <Button onClick={handleChangeStock} className="w-full sm:w-[250px]" block>{
-                                opcion === 'aumentar' ? 'Aumentar' : 'Descontar'
-                            }</Button>
+                {id !== 'nuevo' &&
+                    <>
+                        <div className="flex flex-col items-center justify-center gap-4">
+                            <h2>Manejo de stock</h2>
+                            <Divider />
+                            <div className="flex flex-col items-center justify-center w-full gap-4 sm:flex-row">
+                                <Input
+                                    placeholder="0.00"
+                                    labelPlacement="outside"
+                                    onChange={(e) => setValor(e.target.value)}
+                                    endContent={
+                                        <div className="flex items-center">
+                                            <label className="sr-only" htmlFor="type">
+                                                Tipo
+                                            </label>
+                                            <select
+                                                className="bg-transparent border-0 outline-none text-default-400 text-small"
+                                                id="type"
+                                                name="type"
+                                                onChange={(e) => setOpcion(e.target.value)}
+                                            >
+                                                <option value="aumentar">Aumentar</option>
+                                                <option value="descontar">Descontar</option>
+                                            </select>
+                                        </div>
+                                    }
+                                    type="number"
+                                />
+                                <Button onClick={handleChangeStock} className="w-full sm:w-[250px]" block>{
+                                    opcion === 'aumentar' ? 'Aumentar' : 'Descontar'
+                                }</Button>
+                            </div>
                         </div>
-                    </div>
-                    <Divider />
+                        <Divider />
                     </>
-                    }
+                }
 
                 <div className="flex items-center justify-center w-full mt-2">
                     <Button color="primary" type="submit" onClick={handleSubmit} className="w-full sm:w-[250px]" block>Confirmar</Button>

@@ -15,13 +15,15 @@ const MisPedidos = () => {
         { field: "id", maxWidth: 70 },
         { field: "raza", minWidth: 150 },
         { field: "cantidad", headerName: "Grs.", maxWidth: 90 },
-        { field: "fecha_pedido", headerName: 'Fecha', minWidth: 150, cellRenderer: (data) => {
-            if(data.value && data.value !== "0000-00-00") {
-                return new Date(data.value).toLocaleDateString()
-            } else {
-                return ''
+        {
+            field: "fecha_pedido", headerName: 'Fecha', minWidth: 150, cellRenderer: (data) => {
+                if (data.value && data.value !== "0000-00-00") {
+                    return new Date(data.value).toLocaleDateString()
+                } else {
+                    return ''
+                }
             }
-        }},
+        },
         { field: "despachado", minWidth: 140, cellRenderer: 'agCheckboxCellRenderer' }
     ]
 
@@ -45,7 +47,7 @@ const MisPedidos = () => {
         })
         setPedidos(newPedidos)
     }
-    
+
 
     const onRowDoubleClick = (data) => {
         navigate(`/pedidos/${data.id}`)
@@ -58,7 +60,7 @@ const MisPedidos = () => {
 
 
     return (
-        <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 sm:p-4 xl:p-12">
+        <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 xl:pt-16 xl:justify-start sm:p-4 xl:p-12">
             <h1 className="text-4xl">Mis pedidos</h1>
             <div className="flex flex-col items-center justify-center w-full gap-4 xl:">
                 <div className="md:self-end">
