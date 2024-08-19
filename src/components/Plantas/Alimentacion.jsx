@@ -10,6 +10,9 @@ import {
   getProductosAlimentacionBySemana,
   getFirmasBySemana,
   addFirmaProducto,
+  getFirmasProducto,
+  updateFirma,
+  getUserByCi,
 } from "../../api/api";
 import { useParams } from "react-router-dom";
 import ModalsAlimentacion from "./ModalsAlimentacion";
@@ -26,10 +29,13 @@ const Alimentacion = () => {
   const [loading, setLoading] = useState(false);
   const [rowData, setRowData] = useState([]);
   const [rowSelected, setRowSelected] = useState(null);
+  const userLogged = JSON.parse(localStorage.getItem("club-session"));
   useEffect(() => {
     getSemanas().then((res) => {
       setSemanas(res.data);
     });
+
+    console.log("userLogged", userLogged);
   }, []);
 
   const getProductosBySemana = async (idSemana) => {
@@ -76,7 +82,6 @@ const Alimentacion = () => {
         },
         { field: "responsable", headerName: "RESPONSABLE", maxWidth: 200 },
       ];
-
       setColumns(columnas);
       setLoading(false);
     } catch (error) {
@@ -84,7 +89,44 @@ const Alimentacion = () => {
       setLoading(false);
     }
   };
+
+  const getNameUserByCi = async (cedula) => {
+    if (cedula) {
+      const res = await getUserByCi(cedula);
+      return res.data[0].nombre;
+    } else {
+      return "Sin responsable";
+    }
+  };
+
+  const handleTabSelected = async (tabSelected) => {
+    let rowsData = [];
+    await getProductosBySemana(parseInt(tabSelected));
+
+    const firmasRes = await getFirmasBySemana(parseInt(tabSelected));
+    const firmasPromises = firmasRes.data.map(async (x) => {
+      x.fecha = x.fecha.split("T")[0];
+      const firmasProductoRes = await getFirmasProducto(x.fecha, idPlanta);
+      // x.responsable = await getNameUserByCi(x.idJardinero);
+      x.responsable = 123;
+      const productoCantidadArray =
+        firmasProductoRes.data[0]?.producto_cantidad?.split(",");
+      if (productoCantidadArray) {
+        productoCantidadArray.forEach((pair) => {
+          const [producto, cantidad] = pair.split(":");
+          x[producto] = cantidad;
+        });
+      }
+      return x;
+    });
+
+    const firmasData = await Promise.all(firmasPromises);
+    rowsData.push(...firmasData);
+    setRowData(rowsData);
+  };
+
   const handleFirmaProducto = (props) => {
+    //GUARDAMOS FIRMA PRODUCTO Y ACTUALIZAMOS FIRMA PARA METER LA OBSERVACION, DESPUES VAMOS A SUMAR LA FIRMA DEL JARDINERO
     const productos = [];
     for (const key in props.data) {
       if (
@@ -107,15 +149,13 @@ const Alimentacion = () => {
         console.log(res);
       });
     });
-  };
 
-  const handleTabSelected = (tabSelected) => {
-    getProductosBySemana(parseInt(tabSelected));
-    getFirmasBySemana(parseInt(tabSelected)).then((res) => {
-      res.data.map((x, idx) => {
-        x.fecha = x.fecha.split("T")[0];
-      });
-      setRowData(res.data);
+    updateFirma(
+      props.data.observaciones,
+      userLogged.cedula,
+      props.data.fecha
+    ).then((res) => {
+      console.log("res", res);
     });
   };
 

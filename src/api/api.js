@@ -105,53 +105,53 @@ export const crearUsuario = async (usuario) => {
 };
 
 export const obtenerPedidos = async () => {
-    //getPedidos
-    const options = {
-        method: 'GET',
-        url: '/getPedidos'
-    };
-    return axios.request(options);
-}
+  //getPedidos
+  const options = {
+    method: "GET",
+    url: "/getPedidos",
+  };
+  return axios.request(options);
+};
 
 export const listarSociosConDeudaNoPaga = async () => {
-    const options = {
-        method: 'POST',
-        url: '/listarSociosConDeudaNoPaga'
-    };
-    return axios.request(options);
-}
+  const options = {
+    method: "POST",
+    url: "/listarSociosConDeudaNoPaga",
+  };
+  return axios.request(options);
+};
 
 export const listarSociosConDeudaPaga = async () => {
-    const options = {
-        method: 'POST',
-        url: '/listarSociosConDeudaPaga'
-    };
-    return axios.request(options);
-}
+  const options = {
+    method: "POST",
+    url: "/listarSociosConDeudaPaga",
+  };
+  return axios.request(options);
+};
 
 export const listarPedidosQueTienenDeuda = async () => {
-    const options = {
-        method: 'POST',
-        url: '/listarPedidosQueTienenDeuda'
-    };
-    return axios.request(options);
-}
+  const options = {
+    method: "POST",
+    url: "/listarPedidosQueTienenDeuda",
+  };
+  return axios.request(options);
+};
 
 export const listarPedidosQueTienenDeudaPagada = async () => {
-    const options = {
-        method: 'POST',
-        url: '/listarPedidosQueTienenDeudaPagada'
-    };
-    return axios.request(options);
-}
+  const options = {
+    method: "POST",
+    url: "/listarPedidosQueTienenDeudaPagada",
+  };
+  return axios.request(options);
+};
 
 export const listarPedidosQueTienenDeudaNoPagada = async () => {
-    const options = {
-        method: 'POST',
-        url: '/listarPedidosQueTienenDeudaNoPagada'
-    };
-    return axios.request(options);
-}
+  const options = {
+    method: "POST",
+    url: "/listarPedidosQueTienenDeudaNoPagada",
+  };
+  return axios.request(options);
+};
 
 //SemanaProducto
 export const obtenerSemanaProducto = async () => {
@@ -265,7 +265,7 @@ export const getFirmasBySemana = async (idSemana) => {
     url: `/getFirmasBySemana/${idSemana}`,
   };
   return axios.request(options);
-}	
+};
 
 export const addFirmaProducto = async (firma) => {
   //addFirmaProducto
@@ -276,3 +276,30 @@ export const addFirmaProducto = async (firma) => {
   };
   return axios.request(options);
 };
+
+export const getFirmasProducto = async (fecha, idPlanta) => {
+  //getFirmasProducto
+  const options = {
+    method: "GET",
+    url: `/getFirmasProducto/${fecha}/${idPlanta}`,
+  };
+  return axios.request(options);
+};
+
+export const updateFirma = async (observaciones, cedulaJardinero, fecha) => {
+  //updateFirma
+  const options = {
+    method: "PUT",
+    url: `/updateFirma/${observaciones}/${cedulaJardinero}/${fecha}`,
+  };
+  return axios.request(options);
+};
+
+export const getUserByCi = async (cedula) => {
+  //getUserByCi
+  const options = {
+    method: "GET",
+    url: `/getUserByCi/${cedula}`,
+  };
+  return axios.request(options);
+}
