@@ -1,4 +1,4 @@
-import { Checkbox, Divider, Input, Button } from '@nextui-org/react';
+import { Checkbox, Divider, Input, Button, Select, SelectItem } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
@@ -12,10 +12,10 @@ const Socio = () => {
         //telefono: "",
         consumo_mensual: '',
         es_deudor: false,
-        saldo_negativo: ''
+        saldo_negativo: '',
+        tipo_de_usuario: 'Socio'
     })
     const { cedula } = useParams();
-    const [loading, setLoading] = useState(true)
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,11 +24,7 @@ const Socio = () => {
                 let newUserData = res?.data[0];
                 newUserData.es_deudor = newUserData.es_deudor === 1 ? true : false
                 setUser(newUserData)
-            }).finally(() => {
-                setLoading(false)
             })
-        } else {
-            setLoading(false)
         }
     }, [])
 
@@ -38,9 +34,9 @@ const Socio = () => {
             try {
                 let newUser = {
                     ...user,
-                    tipo_de_usuario: 'Socio',
                     es_deudor: user.es_deudor ? 1 : 0
                 }
+                console.log(newUser)
                 await crearUsuario(newUser)
                 toast.success('Socio creado correctamente')
                 navigate('/socios')
@@ -65,7 +61,17 @@ const Socio = () => {
                 {/*<Input variant="underlined" size={'sm'} placeholder="Ingrese teléfono" labelPlacement={'outside'} label="Teléfono" onChange={(e) => setUser({ ...user, telefono: e.target.value })} value={user.telefono} />*/}
                 <Input variant="underlined" size={'sm'} placeholder="Ingrese consumo mensual" labelPlacement={'outside'} label="Consumo mensual" onChange={(e) => setUser({ ...user, consumo_mensual: e.target.value })} value={user.consumo_mensual} />
                 <Input variant="underlined" size={'sm'} labelPlacement={'outside'} label="Saldo negativo" onChange={(e) => setUser({ ...user, saldo_negativo: e.target.value })} value={user.saldo_negativo} />
-
+                <Select
+                    label="Tipo de usuario"
+                    variant="underlined"
+                    value={user.tipo_de_usuario}
+                    onChange={(e) => setUser({ ...user, tipo_de_usuario: e.target.value })}
+                    defaultSelectedKeys={[user.tipo_de_usuario]}
+                >
+                    <SelectItem key="Socio">Socio</SelectItem>
+                    <SelectItem key="Jardinero">Jardinero</SelectItem>
+                    <SelectItem key="Administrador">Administrador</SelectItem>
+                </Select>
                 <Checkbox
                     label="Es deudor"
                     isSelected={user.es_deudor}
