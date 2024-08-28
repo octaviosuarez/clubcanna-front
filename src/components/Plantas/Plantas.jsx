@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { addPlanta, getPlantas } from "../../api/api";
 import Grid from "../Grid";
-import { FaCannabis } from "react-icons/fa";
+import { RiLayoutGrid2Fill } from "react-icons/ri";
+
 import {
   Button,
   Modal,
@@ -13,7 +14,8 @@ import {
 } from "@nextui-org/react";
 import { useDisclosure } from "@nextui-org/react";
 import { parseDate } from "@internationalized/date";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Plantas = () => {
   const navigate = useNavigate();
@@ -34,10 +36,12 @@ const Plantas = () => {
       cellRenderer: (props) => {
         return (
           <div className="flex w-full h-full justify-center items-center">
-            <FaCannabis
+            <RiLayoutGrid2Fill
               className="cursor-pointer"
-              size={20}
-              onClick={() => goToAlimentacion(props.data.idPlanta, props.data.nombrePlanta)}
+              size={30}
+              onClick={() =>
+                goToAlimentacion(props.data.idPlanta, props.data.nombrePlanta)
+              }
             />
           </div>
         );
@@ -51,20 +55,30 @@ const Plantas = () => {
 
   useEffect(() => {
     getPlantas().then((res) => {
+      res.data.map((planta) => {
+        planta.fechaCreacion = planta.fechaCreacion.split("T")[0];
+      });
       setPlantas(res.data);
     });
   }, []);
 
   const handleAddPlanta = () => {
     const { year, month, day } = fechaCreacion;
-    const formattedDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const formattedDate = `${year}-${String(month).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
     let newPlanta = {
       nombrePlanta,
       fechaCreacion: formattedDate,
     };
     addPlanta(newPlanta).then((res) => {
       getPlantas().then((res) => {
+        res.data.map((planta) => {
+          planta.fechaCreacion = planta.fechaCreacion.split("T")[0];
+        });
         setPlantas(res.data);
+        onClose();
+        toast.success("Planta creada correctamente");
       });
     });
   };

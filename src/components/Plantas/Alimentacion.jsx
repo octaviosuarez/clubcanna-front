@@ -17,6 +17,7 @@ import {
 import { useParams } from "react-router-dom";
 import ModalsAlimentacion from "./ModalsAlimentacion";
 import { FaPencilAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const Alimentacion = () => {
   const { idPlanta, nombrePlanta } = useParams();
@@ -29,14 +30,20 @@ const Alimentacion = () => {
   const [loading, setLoading] = useState(false);
   const [rowData, setRowData] = useState([]);
   const [rowSelected, setRowSelected] = useState(null);
+  const [semanaSeleccionada, setSemanaSeleccionada] = useState("1");
   const userLogged = JSON.parse(localStorage.getItem("club-session"));
+
   useEffect(() => {
     getSemanas().then((res) => {
       setSemanas(res.data);
     });
-
-    console.log("userLogged", userLogged);
   }, []);
+
+  useEffect(() => {
+    if (!isOpen) {
+      handleTabSelected(semanaSeleccionada);
+    }
+  }, [isOpen]);
 
   const getProductosBySemana = async (idSemana) => {
     try {
@@ -67,15 +74,23 @@ const Alimentacion = () => {
           cellRenderer: (props) => {
             return (
               <div className="flex w-full h-full justify-center items-center">
-                <Button
-                  color="primary"
-                  variant="ghost"
-                  size="sm"
-                  startContent={<FaPencilAlt />}
-                  onClick={() => handleFirmaProducto(props)}
-                >
-                  Firmar
-                </Button>
+                {props.data.responsable ? (
+                  <p>Firmado</p>
+                ) : (
+                  <Button
+                    color="primary"
+                    variant="solid"
+                    size="sm"
+                    startContent={<FaPencilAlt />}
+                    isDisabled={
+                      props.data.fecha !==
+                      new Date().toISOString().split("T")[0]
+                    }
+                    onClick={() => handleFirmaProducto(props)}
+                  >
+                    Firmar
+                  </Button>
+                )}
               </div>
             );
           },
@@ -100,22 +115,24 @@ const Alimentacion = () => {
   };
 
   const handleTabSelected = async (tabSelected) => {
+    setRowData([]);
     let rowsData = [];
     await getProductosBySemana(parseInt(tabSelected));
-
     const firmasRes = await getFirmasBySemana(parseInt(tabSelected));
     const firmasPromises = firmasRes.data.map(async (x) => {
       x.fecha = x.fecha.split("T")[0];
       const firmasProductoRes = await getFirmasProducto(x.fecha, idPlanta);
       // x.responsable = await getNameUserByCi(x.idJardinero);
-      x.responsable = 123;
-      const productoCantidadArray =
-        firmasProductoRes.data[0]?.producto_cantidad?.split(",");
-      if (productoCantidadArray) {
-        productoCantidadArray.forEach((pair) => {
-          const [producto, cantidad] = pair.split(":");
-          x[producto] = cantidad;
-        });
+      if (firmasProductoRes.data[0].producto_cantidad !== null) {
+        x.responsable = "Felipe";
+        const productoCantidadArray =
+          firmasProductoRes.data[0]?.producto_cantidad?.split(",");
+        if (productoCantidadArray) {
+          productoCantidadArray.forEach((pair) => {
+            const [producto, cantidad] = pair.split(":");
+            x[producto] = cantidad;
+          });
+        }
       }
       return x;
     });
@@ -125,38 +142,39 @@ const Alimentacion = () => {
     setRowData(rowsData);
   };
 
-  const handleFirmaProducto = (props) => {
-    //GUARDAMOS FIRMA PRODUCTO Y ACTUALIZAMOS FIRMA PARA METER LA OBSERVACION, DESPUES VAMOS A SUMAR LA FIRMA DEL JARDINERO
-    const productos = [];
-    for (const key in props.data) {
-      if (
-        !["fecha", "idSemanaProducto", "idPlanta", "idJardinero"].includes(key)
-      ) {
-        productos.push({
+  const handleFirmaProducto = async (props) => {
+    try {
+      // GUARDAMOS FIRMA PRODUCTO Y ACTUALIZAMOS FIRMA PARA METER LA OBSERVACION, DESPUES VAMOS A SUMAR LA FIRMA DEL JARDINERO
+      const productos = Object.keys(props.data)
+        .filter(
+          (key) =>
+            !["fecha", "idSemana", "idPlanta", "idJardinero"].includes(key)
+        )
+        .map((key) => ({
           idProducto: parseInt(key),
           cantidad: props.data[key],
-        });
-      }
-    }
+        }));
 
-    productos.forEach((producto) => {
-      let data = {
-        fecha: props.data.fecha,
-        idProducto: producto.idProducto,
-        cantidadProducto: producto.cantidad,
-      };
-      addFirmaProducto(data).then((res) => {
+      for (const producto of productos) {
+        const data = {
+          fecha: props.data.fecha,
+          idProducto: producto.idProducto,
+          cantidadProducto: producto.cantidad,
+        };
+        const res = await addFirmaProducto(data);
         console.log(res);
-      });
-    });
+      }
 
-    updateFirma(
-      props.data.observaciones,
-      userLogged.cedula,
-      props.data.fecha
-    ).then((res) => {
-      console.log("res", res);
-    });
+      await updateFirma(
+        props.data.observaciones,
+        userLogged.cedula,
+        props.data.fecha
+      );
+      toast.success("Firma guardada exitosamente");
+      handleTabSelected(semanaSeleccionada);
+    } catch (error) {
+      toast.error("Error al guardar la firma");
+    }
   };
 
   return (
@@ -201,11 +219,17 @@ const Alimentacion = () => {
           </Button>
         </div>
       </div>
-      <Tabs onSelectionChange={handleTabSelected} className="w-full">
+      <Tabs
+        onSelectionChange={(e) => {
+          setSemanaSeleccionada(e);
+          handleTabSelected(e);
+        }}
+        className="w-full"
+      >
         {semanas.map((x, index) => (
           <Tab key={x.idSemana} title={x.nombreSemana} className="w-full">
             <div className="flex flex-col w-full">
-              <p className="text-2xl font-semibold">{x.nombreSemana}</p>
+              <p className="text-2xl font-semibold mb-3">{x.nombreSemana}</p>
               <Grid
                 className="w-full"
                 columns={columns}
