@@ -58,6 +58,7 @@ const sidebarOptions = [
     required: "admin",
     description: capitalize("deudores"),
   },
+  /*
   {
     id: "plantas",
     link: "/plantas",
@@ -65,6 +66,7 @@ const sidebarOptions = [
     required: "admin",
     description: capitalize("plantas"),
   },
+  */
 ];
 
 const Sidebar = ({ isMobile }) => {
@@ -124,11 +126,10 @@ const Sidebar = ({ isMobile }) => {
             }}
             key={option.id}
             className={`flex items-center justify-center h-12 gap-4 rounded-lg cursor-pointer
-                        ${
-                          isActive
-                            ? "bg-gray-300 dark:bg-gray-700"
-                            : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                        }`}
+                        ${isActive
+                ? "bg-gray-300 dark:bg-gray-700"
+                : "hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
           >
             {option.icon}
             <Link
@@ -136,9 +137,8 @@ const Sidebar = ({ isMobile }) => {
                 handleNavigate(option.link);
                 setActiveOption(option.id);
               }}
-              className={`w-full ml-4 font-semibold text-foreground-800 ${
-                isActive ? "font-bold" : ""
-              }`}
+              className={`w-full ml-4 font-semibold text-foreground-800 ${isActive ? "font-bold" : ""
+                }`}
             >
               {option.description}
             </Link>
@@ -170,9 +170,8 @@ const Sidebar = ({ isMobile }) => {
 
           {/* Mobile Sidebar */}
           <div
-            className={`lg:hidden fixed z-50 top-0 left-0 w-full h-[100dvh] flex-col max-h-[100dvh] bg-white dark:bg-gray-800 transition-transform transform ${
-              menuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+            className={`lg:hidden fixed z-50 top-0 left-0 w-full h-[100dvh] flex-col max-h-[100dvh] bg-white dark:bg-gray-800 transition-transform transform ${menuOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
           >
             <div className="flex flex-col h-[100dvh] p-4">
               <div className="flex items-center justify-between mb-4">
@@ -200,9 +199,8 @@ const Sidebar = ({ isMobile }) => {
                   <DropdownMenu variant="faded" aria-label="Cambio de tema">
                     <DropdownItem
                       key="theme"
-                      description={`Cambiar a tema ${
-                        theme === "light" ? "oscuro" : "claro"
-                      }`}
+                      description={`Cambiar a tema ${theme === "light" ? "oscuro" : "claro"
+                        }`}
                       startContent={theme === "light" ? iconLight : iconDark}
                       onClick={handleChangeTheme}
                     >
@@ -243,9 +241,8 @@ const Sidebar = ({ isMobile }) => {
             <DropdownMenu variant="faded" aria-label="Cambio de tema">
               <DropdownItem
                 key="theme"
-                description={`Cambiar a tema ${
-                  theme === "light" ? "oscuro" : "claro"
-                }`}
+                description={`Cambiar a tema ${theme === "light" ? "oscuro" : "claro"
+                  }`}
                 startContent={theme === "light" ? iconLight : iconDark}
                 onClick={handleChangeTheme}
               >

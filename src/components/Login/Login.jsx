@@ -32,7 +32,6 @@ export default function Login() {
             if (res.status === 200) {
                 let userData = res?.data?.user;
                 userData.level = tiposDeUsuario[userData.tipo_de_usuario]
-                console.log(userData)
                 setUserData(userData)
                 if (userData.level === 'admin') {
                     navigate('/socios')

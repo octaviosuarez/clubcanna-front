@@ -46,7 +46,9 @@ const Grid = ({ data, columns, onDoubleClick, setRowSelected }) => {
 
   const onSelectionChanged = useCallback(() => {
     const selectedRows = gridRef?.current?.api.getSelectedRows();
-    setRowSelected(selectedRows);
+    if (setRowSelected) {
+      setRowSelected(selectedRows);
+    }
   }, [setRowSelected]);
 
   const defaultColDef = useMemo(() => {

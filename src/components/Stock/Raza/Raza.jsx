@@ -1,8 +1,8 @@
 import { Divider, Input, Button } from '@nextui-org/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { crearRaza } from '../../../api/api';
+import { crearRaza, obtenerRaza } from '../../../api/api';
 
 const Raza = () => {
     const [raza, setRaza] = useState({
@@ -16,15 +16,17 @@ const Raza = () => {
     const navigate = useNavigate();
 
     // con la cédula iría a buscar los datos del socio
+    useEffect(() => {
+        obtenerRaza(id).then((res) => {
+            setRaza({
+                nombre: res.data.raza,
+                precio: res.data.precio,
+                stock: res.data.stock
+            })
+        })
+    }, [])
 
-    /*
-        get razas from api
-        useEffect(() => {
-            obtenerRaza(id).then((res) => {
-                setRaza(res.data)
-            }
-        }, [])
-    */
+
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -63,7 +65,6 @@ const Raza = () => {
     }
 
     const handleChangeStock = () => {
-        console.log(opcion, valor)
         if (opcion === 'aumentar') {
             handleAdd()
         } else {

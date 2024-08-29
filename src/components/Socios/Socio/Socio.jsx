@@ -2,7 +2,7 @@ import { Checkbox, Divider, Input, Button, Select, SelectItem } from '@nextui-or
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { crearUsuario, obtenerSocio } from '../../../api/api';
+import { actualizarSocio, crearUsuario, obtenerSocio } from '../../../api/api';
 
 const Socio = () => {
     const [user, setUser] = useState({
@@ -36,7 +36,6 @@ const Socio = () => {
                     ...user,
                     es_deudor: user.es_deudor ? 1 : 0
                 }
-                console.log(newUser)
                 await crearUsuario(newUser)
                 toast.success('Socio creado correctamente')
                 navigate('/socios')
@@ -44,7 +43,11 @@ const Socio = () => {
                 toast.error('Error al crear el socio')
             }
         } else {
-            // await actualizarSocio(user
+            let userToUpdate = {
+                ...user,
+                es_deudor: user.es_deudor ? 1 : 0
+            }
+            await actualizarSocio(userToUpdate)
             toast.success('Socio actualizado correctamente')
         }
     }

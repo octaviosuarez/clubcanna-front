@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import useStore from '../../../store/useStore';
-import { crearDeuda, crearPedido, eliminarDeuda, obtenerDeudaPorIdPedido, obtenerPedido, obtenerStock } from '../../../api/api';
+import { actualizarPedido, actualizarSocio, crearDeuda, crearPedido, eliminarDeuda, obtenerDeudaPorIdPedido, obtenerPedido, obtenerSocio, obtenerStock } from '../../../api/api';
 
 const Pedido = () => {
 
@@ -87,6 +87,8 @@ const Pedido = () => {
             return
         }
 
+        let monto = parseInt(pedido.gramos) * stock.find(raza => raza.id === parseInt(pedido.idRaza)).precio
+
         if (id === 'nuevo') {
             let newPedido = {
                 cedula_socio: pedido.cedula,
@@ -98,25 +100,52 @@ const Pedido = () => {
                 fecha_pedido: new Date().toISOString().split('T')[0]
             }
             let pedidoCreado = await crearPedido(newPedido);
-            console.log(pedidoCreado?.data?.pedido)
 
             if (!pedido.pago_realizado) {
                 let deuda = {
                     idPedido: pedidoCreado?.data?.pedido?.id,
-                    monto: parseInt(pedido.gramos) * stock.find(raza => raza.id === parseInt(pedido.idRaza)).precio
+                    monto: monto
                 }
-                console.log(deuda);
                 await crearDeuda(deuda)
+                let socio = await obtenerSocio(pedido.cedula);
+                socio = socio?.data[0];
+                if (socio) {
+                    let saldoNegativo = parseInt(socio.saldo_negativo) + monto
+                    let esDeudor = saldoNegativo > 0 ? 1 : 0;
+                    await actualizarSocio({ ...socio, saldo_negativo: saldoNegativo, es_deudor: esDeudor })
+                }
             }
             toast.success('Pedido creado correctamente')
         } else {
+            let pedidoActualizado = {
+                id: id,
+                cedula_socio: pedido.cedula,
+                id_producto: pedido.idRaza,
+                cantidad: pedido.gramos,
+                despachado: pedido.despachado ? 1 : 0,
+                pago_realizado: pedido.pago_realizado ? 1 : 0
+            }
+            await actualizarPedido(pedidoActualizado);
+
             if (!estabaPago && pedido.pago_realizado) {
                 let deuda = await obtenerDeudaPorIdPedido(id);
                 deuda = deuda.data;
                 if (deuda) {
                     await eliminarDeuda(deuda.id)
                 }
+                let socio = await obtenerSocio(pedido.cedula);
+                socio = socio?.data[0];
+                if (socio) {
+                    let saldoNegativo = parseInt(socio.saldo_negativo) - monto;
+                    let esDeudor = saldoNegativo > 0 ? 1 : 0;
+                    if (saldoNegativo < 0) {
+                        saldoNegativo = 0;
+                    }
+
+                    await actualizarSocio({ ...socio, saldo_negativo: saldoNegativo, es_deudor: esDeudor })
+                }
             }
+
             toast.success('Pedido actualizado correctamente')
         }
 
@@ -126,8 +155,6 @@ const Pedido = () => {
             navigate('/pedidos')
         }
     }
-
-    console.log(pedido)
 
     return (
         stock && !loading && <div className="flex flex-col items-center justify-center h-full">

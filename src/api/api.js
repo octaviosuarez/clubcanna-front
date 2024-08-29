@@ -42,7 +42,7 @@ export const crearSocio = async (socio) => {
 export const actualizarSocio = async (socio) => {
     const options = {
         method: "PUT",
-        url: "/socio",
+        url: `/updateUser/${socio.cedula}`,
         data: socio,
     };
     return axios.request(options);
@@ -100,6 +100,15 @@ export const crearUsuario = async (usuario) => {
         method: "POST",
         url: "/addUser",
         data: usuario,
+    };
+    return axios.request(options);
+};
+
+export const obtenerRaza = async (id) => {
+    //getProductByRaza
+    const options = {
+        method: "GET",
+        url: `/getProductById/${id}`,
     };
     return axios.request(options);
 };
