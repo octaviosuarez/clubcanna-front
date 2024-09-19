@@ -4,6 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@nextui-org/react';
 import { obtenerSocios } from '../../api/api';
 
+const vipCheckboxRenderer = (params) => {
+    const checked = params.value === 'vip';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = checked;
+    return checkbox;
+};
+
 const Socios = () => {
 
     const navigate = useNavigate();
@@ -16,13 +24,15 @@ const Socios = () => {
         { field: "email" },
         { field: "consumo_mensual", headerName: "Consumo mensual", minWidth: 170 },
         { field: "es_deudor", headerName: "Deudor", minWidth: 120, cellRenderer: 'agCheckboxCellRenderer' },
-        { field: "saldo_negativo", headerName: "Saldo negativo", minWidth: 170 }
+        { field: "tipo_socio", headerName: "VIP", minWidth: 150, cellRenderer: 'agCheckboxCellRenderer' },
+        { field: "saldo_negativo", headerName: "Saldo negativo", minWidth: 170 },
     ]
 
     useEffect(() => {
         obtenerSocios().then((res) => {
             let newSocios = res.data.map(socio => {
-                socio.es_deudor = socio.es_deudor === 1 ? true : false
+                socio.es_deudor = socio.es_deudor === 1 ? true : false;
+                socio.tipo_socio = socio.tipo_socio === 'vip' ? true : false;
                 return socio
             })
             setSocios(newSocios)

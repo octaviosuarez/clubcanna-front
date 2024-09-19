@@ -13,7 +13,8 @@ const Socio = () => {
         consumo_mensual: '',
         es_deudor: false,
         saldo_negativo: '',
-        tipo_de_usuario: 'Socio'
+        tipo_de_usuario: 'Socio',
+        tipo_socio: 'regular'
     })
     const { cedula } = useParams();
     const navigate = useNavigate();
@@ -43,12 +44,17 @@ const Socio = () => {
                 toast.error('Error al crear el socio')
             }
         } else {
-            let userToUpdate = {
-                ...user,
-                es_deudor: user.es_deudor ? 1 : 0
+            try {
+                let newUser = {
+                    ...user,
+                    es_deudor: user.es_deudor ? 1 : 0
+                }
+                await actualizarSocio(newUser)
+                toast.success('Socio actualizado correctamente')
+                navigate('/socios')
+            } catch (error) {
+                toast.error('Error al actualizar el socio')
             }
-            await actualizarSocio(userToUpdate)
-            toast.success('Socio actualizado correctamente')
         }
     }
 
@@ -83,6 +89,13 @@ const Socio = () => {
                     Es deudor
                 </Checkbox>
                 <Divider />
+                <Checkbox
+                    label="Es VIP"
+                    isSelected={user.tipo_socio === 'vip'}
+                    onChange={(e) => setUser({ ...user, tipo_socio: e.target.checked ? 'vip' : 'regular' })}
+                >
+                    VIP
+                </Checkbox>
                 <div className="flex items-center justify-center w-full mt-2">
                     <Button color="primary" type="submit" onClick={handleSubmit} className="w-full sm:w-[250px]" block>Confirmar</Button>
                 </div>

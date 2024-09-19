@@ -15,7 +15,8 @@ const Pedido = () => {
         idRaza: '',
         gramos: '',
         despachado: false,
-        pago_realizado: false
+        pago_realizado: false,
+        tipo_pago: 'Efectivo'
     })
     const { id } = useParams();
 
@@ -24,8 +25,6 @@ const Pedido = () => {
     const [estabaPago, setEstabaPago] = useState(false)
 
     const [stock, setStock] = useState([])
-
-
 
     useEffect(() => {
         loadData();
@@ -45,7 +44,8 @@ const Pedido = () => {
                 idRaza: pedido.id_producto.toString(),
                 gramos: pedido.cantidad,
                 despachado: pedido.despachado === 1,
-                pago_realizado: pedido.pago_realizado === 1
+                pago_realizado: pedido.pago_realizado === 1,
+                tipo_pago: pedido.tipo_pago
             });
         }
 
@@ -97,7 +97,8 @@ const Pedido = () => {
                 despachado: pedido.despachado ? 1 : 0,
                 pago_realizado: pedido.pago_realizado ? 1 : 0,
                 //Date in format YYYY-MM-DD
-                fecha_pedido: new Date().toISOString().split('T')[0]
+                fecha_pedido: new Date().toISOString().split('T')[0],
+                tipo_pago: pedido.tipo_pago
             }
             let pedidoCreado = await crearPedido(newPedido);
 
@@ -123,7 +124,8 @@ const Pedido = () => {
                 id_producto: pedido.idRaza,
                 cantidad: pedido.gramos,
                 despachado: pedido.despachado ? 1 : 0,
-                pago_realizado: pedido.pago_realizado ? 1 : 0
+                pago_realizado: pedido.pago_realizado ? 1 : 0,
+                tipo_pago: pedido.tipo_pago
             }
             await actualizarPedido(pedidoActualizado);
 
@@ -179,7 +181,6 @@ const Pedido = () => {
                 </Select>
 
                 <Input variant="underlined" size={'sm'} placeholder={'Ingresar gramos'} labelPlacement={'outside'} label="Gramos" onChange={(e) => setPedido({ ...pedido, gramos: e.target.value })} value={pedido.gramos} />
-
                 {((userData?.level === 'user' && id !== 'nuevo') || userData?.level === 'admin') && <Checkbox
                     label="Despachado"
                     isSelected={pedido.despachado}
@@ -196,6 +197,17 @@ const Pedido = () => {
                 >
                     Pagado
                 </Checkbox>}
+                {((userData?.level === 'user' && id !== 'nuevo') || userData?.level === 'admin') && <Select
+                    label="Tipo de pago"
+                    variant="underlined"
+                    value={pedido.tipo_pago}
+                    onChange={(e) => setPedido({ ...pedido, tipo_pago: e.target.value })}
+                    defaultSelectedKeys={[pedido.tipo_pago]}
+                    isDisabled={userData?.level !== 'admin' || !pedido.pago_realizado}
+                >
+                    <SelectItem key="Efectivo">Efectivo</SelectItem>
+                    <SelectItem key="Transferencia">Transferencia</SelectItem>
+                </Select>}
                 <Divider />
                 <div className="flex items-center justify-center w-full mt-2">
                     <Button color="primary" type="submit" onClick={handleSubmit} className="w-full sm:w-[250px]" block>Confirmar</Button>
