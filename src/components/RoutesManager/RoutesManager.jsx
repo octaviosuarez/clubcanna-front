@@ -11,13 +11,15 @@ import MisPedidos from "../Pedidos/MisPedidos";
 import { useEffect, useState } from "react";
 import Pedido from "../Pedidos/Pedido";
 import useStore from "../../store/useStore";
-import { user } from "@nextui-org/react";
 import Plantas from "../Plantas";
 import Alimentacion from "../Plantas/Alimentacion";
 import Deudores from "../Deudores";
+import { obtenerClubId } from "../../api/api";
+
 function RoutesManager() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const { setClubId } = useStore();
   const { userData } = useStore();
 
   useEffect(() => {
@@ -38,6 +40,17 @@ function RoutesManager() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
+  }, []);
+
+  useEffect(() => {
+    //let actualClubName = window.location.pathname.split('/')[1];
+    const actualClubName = 'atahualpa';
+    obtenerClubId(actualClubName).then((res) => {
+      if (res?.data?.length > 0) {
+        setClubId(res.data[0].id);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

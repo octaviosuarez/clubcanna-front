@@ -6,11 +6,13 @@ const localStorageKey = 'club-session';
 const localStorageThemeKey = 'club-theme';
 const sessionData = getFromLocalStorage(localStorageKey);
 const themeData = getSimpleFromLocalStorage(localStorageThemeKey) || 'light';
+const clubId = getSimpleFromLocalStorage('club_id');
 document.documentElement.classList.toggle('dark', themeData === 'dark');
 
 const useStore = create((set) => ({
     userData: sessionData,
     theme: themeData,
+    club_id: clubId,
     setUserData: (userData) => {
         set({ userData: userData });
         if (!userData) {
@@ -23,6 +25,10 @@ const useStore = create((set) => ({
         set({ theme: theme });
         setInLocalStorage(localStorageThemeKey, theme);
         document.documentElement.classList.toggle('dark', theme === 'dark');
+    },
+    setClubId: (clubId) => {
+        set({ club_id: clubId });
+        setInLocalStorage('club_id', clubId);
     },
 }));
 

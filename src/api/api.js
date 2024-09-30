@@ -1,9 +1,23 @@
 import axios from "axios";
+import { getSimpleFromLocalStorage } from "../utils/storage";
 const URL = "http://localhost:443";
+const CLUB_ID = getSimpleFromLocalStorage("club_id");
 
 axios.defaults.baseURL = URL;
+axios.interceptors.request.use((config) => {
+    config.params = { ...config.params, club_id: CLUB_ID };
+    return config;
+});
 
 //LOGIN
+
+export const obtenerClubId = async (clubName) => {
+    const options = {
+        method: "GET",
+        url: `/getDataClubByName/${clubName}`,
+    };
+    return axios.request(options);
+}
 
 export const login = async (usuario) => {
     const options = {
@@ -324,6 +338,24 @@ export const addFirmaProducto = async (firma) => {
         method: "POST",
         url: "/addFirmaProducto",
         data: firma,
+    };
+    return axios.request(options);
+};
+
+export const getCierreDiario = async () => {
+    //getCierreDiario
+    const options = {
+        method: "GET",
+        url: "/getCierreDelDia",
+    };
+    return axios.request(options);
+};
+
+export const getCierreMensual = async (mes) => {
+    //getCierreMensual
+    const options = {
+        method: "GET",
+        url: `/getCierreDelMes/${mes}`,
     };
     return axios.request(options);
 };
