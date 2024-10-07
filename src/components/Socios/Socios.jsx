@@ -1,32 +1,52 @@
 import { useEffect, useState } from 'react';
 import Grid from '../Grid'
 import { useNavigate } from 'react-router-dom'
-import { Button } from '@nextui-org/react';
-import { obtenerSocios } from '../../api/api';
-
-const vipCheckboxRenderer = (params) => {
-    const checked = params.value === 'vip';
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.checked = checked;
-    return checkbox;
-};
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ModalContent, useDisclosure, } from '@nextui-org/react';
+import { obtenerSocios, eliminarSocio } from '../../api/api';
+import { TbTrash } from 'react-icons/tb';
 
 const Socios = () => {
 
     const navigate = useNavigate();
     const [socios, setSocios] = useState([])
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
 
     const columns = [
         { field: "cedula", headerName: "Cédula", maxWidth: 120 },
         { field: "nombre_completo", minWidth: 150, headerName: "Nombre" },
-        //{ field: "telefono", headerName: "Teléfono", maxWidth: 150 },
         { field: "email" },
-        { field: "consumo_mensual", headerName: "Consumo mensual", minWidth: 170 },
+        { field: "celular", headerName: "Celular", minWidth: 170 },
         { field: "es_deudor", headerName: "Deudor", minWidth: 120, cellRenderer: 'agCheckboxCellRenderer' },
         { field: "tipo_socio", headerName: "VIP", minWidth: 150, cellRenderer: 'agCheckboxCellRenderer' },
         { field: "saldo_negativo", headerName: "Saldo negativo", minWidth: 170 },
+        {
+            field: "actions",
+            headerName: "Acciones",
+            cellRenderer: (params) => (
+                <div onClick={() => openDeleteModal(params.data.cedula)} className="flex items-center justify-center my-[6px] ml-2 bg-red-500 rounded cursor-pointer w-7 h-7">
+                    <TbTrash size={20} color='white' />
+                </div>
+            )
+        }
     ]
+
+    const openDeleteModal = (cedula) => {
+        setUserToDelete(cedula);
+        onOpen();
+    }
+
+    const handleDeleteUser = () => {
+        eliminarSocio(userToDelete)
+            .then(() => {
+                setSocios(socios.filter(s => s.cedula !== userToDelete));
+            })
+            .catch(error => console.error("Error al eliminar:", error))
+            .finally(() => {
+                onclose();
+            })
+    }
 
     useEffect(() => {
         obtenerSocios().then((res) => {
@@ -50,7 +70,32 @@ const Socios = () => {
 
 
     return (
+
         <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 xl:pt-16 xl:justify-start sm:p-4 xl:p-12">
+            <Modal backdrop="opaque"
+                isOpen={isOpen}
+                onOpenChange={onOpenChange} onClose={() => setDeleteModalOpen(false)}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader>
+                                <h3>Confirmar eliminación</h3>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p>¿Está seguro de eliminar este usuario?</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button auto color="danger" onPress={handleDeleteUser}>
+                                    Eliminar
+                                </Button>
+                                <Button auto color="primary" onPress={onClose}>
+                                    Cancelar
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
             <h1 className="text-4xl">Lista de socios</h1>
             <div className="flex flex-col items-center justify-center w-full gap-4 xl:">
                 <div className="md:self-end">

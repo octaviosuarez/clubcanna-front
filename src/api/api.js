@@ -62,10 +62,11 @@ export const actualizarSocio = async (socio) => {
     return axios.request(options);
 };
 
-export const eliminarSocio = async (cedula) => {
+export const eliminarSocio = async (socio) => {
     const options = {
         method: "DELETE",
-        url: `/socio/${cedula}`,
+        url: `/deleteUser`,
+        data: socio,
     };
     return axios.request(options);
 };

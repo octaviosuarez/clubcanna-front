@@ -10,7 +10,7 @@ const Socio = () => {
         nombre_completo: "",
         email: "",
         //telefono: "",
-        consumo_mensual: '',
+        celular: '',
         es_deudor: false,
         saldo_negativo: '',
         tipo_de_usuario: 'Socio',
@@ -67,8 +67,7 @@ const Socio = () => {
                 <Input variant="underlined" size={'sm'} placeholder="Ingrese cédula" labelPlacement={'outside'} label="Cédula" onChange={(e) => setUser({ ...user, cedula: e.target.value })} value={user.cedula} />
                 <Input variant="underlined" size={'sm'} placeholder={'Ingrese nombre'} labelPlacement={'outside'} label="Nombre" onChange={(e) => setUser({ ...user, nombre_completo: e.target.value })} value={user.nombre_completo} />
                 <Input variant="underlined" size={'sm'} placeholder="Ingrese email" labelPlacement={'outside'} label="Email" onChange={(e) => setUser({ ...user, email: e.target.value })} value={user.email} />
-                {/*<Input variant="underlined" size={'sm'} placeholder="Ingrese teléfono" labelPlacement={'outside'} label="Teléfono" onChange={(e) => setUser({ ...user, telefono: e.target.value })} value={user.telefono} />*/}
-                <Input variant="underlined" size={'sm'} placeholder="Ingrese consumo mensual" labelPlacement={'outside'} label="Consumo mensual" onChange={(e) => setUser({ ...user, consumo_mensual: e.target.value })} value={user.consumo_mensual} />
+                <Input type='text' variant="underlined" size={'sm'} placeholder="Ingrese celular" labelPlacement={'outside'} label="Celular" onChange={(e) => setUser({ ...user, celular: e.target.value })} value={user.celular} />
                 <Input variant="underlined" size={'sm'} labelPlacement={'outside'} label="Saldo negativo" onChange={(e) => setUser({ ...user, saldo_negativo: e.target.value })} value={user.saldo_negativo} />
                 <Select
                     label="Tipo de usuario"

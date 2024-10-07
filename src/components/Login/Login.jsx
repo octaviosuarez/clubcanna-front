@@ -62,9 +62,7 @@ export default function Login() {
 
                     <CardBody className="flex flex-col gap-4">
                         <Input id="inputUser" autoComplete="one-time-code" label="Usuario" onChange={(e) => setUser(e.target.value)} value={user} />
-                        {/*
                         <Input id="inputPassword" autoComplete="one-time-code" label="Contraseña" type="password" onChange={(e) => setPassword(e.target.value)} value={password} />
-                        */}
                     </CardBody>
 
                     <Divider />
