@@ -360,3 +360,11 @@ export const getCierreMensual = async (mes) => {
     };
     return axios.request(options);
 };
+
+export const eliminarPedido = async (id) => {
+    const options = {
+        method: 'POST',
+        url: `/deletePedido/${id}`
+    };
+    return axios.request(options);
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Grid from '../Grid'
 import { useNavigate } from 'react-router-dom'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ModalContent, useDisclosure, } from '@nextui-org/react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ModalContent, useDisclosure } from '@nextui-org/react';
 import { obtenerSocios, eliminarSocio } from '../../api/api';
 import { TbTrash } from 'react-icons/tb';
 
@@ -10,7 +10,6 @@ const Socios = () => {
     const navigate = useNavigate();
     const [socios, setSocios] = useState([])
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
 
     const columns = [
@@ -37,14 +36,14 @@ const Socios = () => {
         onOpen();
     }
 
-    const handleDeleteUser = () => {
+    const handleDeleteUser = (onClose) => {
         eliminarSocio(userToDelete)
             .then(() => {
                 setSocios(socios.filter(s => s.cedula !== userToDelete));
             })
             .catch(error => console.error("Error al eliminar:", error))
             .finally(() => {
-                onclose();
+                onClose();
             })
     }
 
@@ -70,11 +69,10 @@ const Socios = () => {
 
 
     return (
-
         <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 xl:pt-16 xl:justify-start sm:p-4 xl:p-12">
             <Modal backdrop="opaque"
                 isOpen={isOpen}
-                onOpenChange={onOpenChange} onClose={() => setDeleteModalOpen(false)}>
+                onOpenChange={onOpenChange}>
                 <ModalContent>
                     {(onClose) => (
                         <>
@@ -85,7 +83,7 @@ const Socios = () => {
                                 <p>¿Está seguro de eliminar este usuario?</p>
                             </ModalBody>
                             <ModalFooter>
-                                <Button auto color="danger" onPress={handleDeleteUser}>
+                                <Button auto color="danger" onPress={() => handleDeleteUser(onClose)}>
                                     Eliminar
                                 </Button>
                                 <Button auto color="primary" onPress={onClose}>

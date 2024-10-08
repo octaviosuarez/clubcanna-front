@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { listarSociosConDeudaNoPaga, listarSociosConDeudaPaga, listarPedidosQueTienenDeuda, listarPedidosQueTienenDeudaPagada, listarPedidosQueTienenDeudaNoPagada } from '../../api/api';
 import { Tabs, Tab } from '@nextui-org/react';
 import './Deudores.css'
-import { parse } from 'postcss';
 
 const columnasSocios = [
     { field: "cedula", headerName: "Cédula", maxWidth: 120 },
@@ -16,6 +15,7 @@ const columnasSocios = [
 const columnasPedidos = [
     { field: "id", headerName: "ID", maxWidth: 120 },
     { field: "cedula_socio", headerName: "Cédula", maxWidth: 120 },
+    { field: "nombre_completo", minWidth: 150, headerName: "Nombre" },
     { field: "id_producto", headerName: "ID Producto" },
     { field: "cantidad", headerName: "Cantidad", maxWidth: 120 },
     {

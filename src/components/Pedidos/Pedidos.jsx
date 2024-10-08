@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import Grid from '../Grid'
 import { useNavigate } from 'react-router-dom'
-import { Button, Divider, Select, SelectItem } from '@nextui-org/react';
-import { obtenerPedidos, obtenerStock, getCierreMensual, getCierreDiario } from '../../api/api';
+import { Button, Divider, Select, SelectItem, Modal, ModalHeader, ModalBody, ModalFooter, ModalContent, useDisclosure } from '@nextui-org/react';
+import { obtenerPedidos, obtenerStock, getCierreMensual, getCierreDiario, eliminarPedido } from '../../api/api';
 import { Card, CardBody } from "@nextui-org/react";
+import { TbTrash } from 'react-icons/tb';
 
 const meses = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -11,16 +12,18 @@ const meses = [
 ];
 
 const Pedidos = () => {
-
     const navigate = useNavigate();
-    const [pedidos, setPedidos] = useState([])
+    const [pedidos, setPedidos] = useState([]);
     const [pedidosFiltrados, setPedidosFiltrados] = useState([]);
     const [mesSeleccionado, setMesSeleccionado] = useState("");
     const [totalDia, setTotalDia] = useState(0);
     const [totalMes, setTotalMes] = useState(0);
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [pedidoToDelete, setPedidoToDelete] = useState(null);
+
     const columns = [
         { field: "id", maxWidth: 70 },
-        { field: "cedula_socio", headerName: "Cliente", maxWidth: 120 },
+        { field: "nombre_completo", headerName: "Cliente", maxWidth: 170 },
         { field: "raza", minWidth: 150 },
         { field: "cantidad", headerName: "Grs.", maxWidth: 90 },
         {
@@ -35,6 +38,15 @@ const Pedidos = () => {
         { field: "despachado", minWidth: 140, cellRenderer: 'agCheckboxCellRenderer' },
         { field: "pago_realizado", headerName: "Pagado", minWidth: 140, cellRenderer: 'agCheckboxCellRenderer' },
         { field: "tipo_pago", headerName: 'Tipo de pago', minWidth: 150 },
+        {
+            field: "actions",
+            headerName: "Acciones",
+            cellRenderer: (params) => (
+                <div onClick={() => openDeleteModal(params.data.id)} className="flex items-center justify-center my-[6px] ml-2 bg-red-500 rounded cursor-pointer w-7 h-7">
+                    <TbTrash size={20} color='white' />
+                </div>
+            )
+        }
     ]
 
     useEffect(() => {
@@ -75,7 +87,8 @@ const Pedidos = () => {
                 fecha_pedido: pedido.fecha_pedido,
                 despachado: pedido.despachado === 1 ? true : false,
                 pago_realizado: pedido.pago_realizado === 1 ? true : false,
-                tipo_pago: pedido.tipo_pago
+                tipo_pago: pedido.tipo_pago,
+                nombre_completo: pedido.nombre_completo,
             }
         })
         setPedidos(newPedidos)
@@ -104,8 +117,48 @@ const Pedidos = () => {
         setMesSeleccionado(e.target.value);
     }
 
+    const openDeleteModal = (cedula) => {
+        setPedidoToDelete(cedula);
+        onOpen();
+    }
+
+    const handleDeletePedido = (onClose) => {
+        eliminarPedido(pedidoToDelete)
+            .then(() => {
+                setPedidos(pedidos.filter(p => p.id !== pedidoToDelete));
+            })
+            .catch(error => console.error("Error al eliminar:", error))
+            .finally(() => {
+                onClose();
+            })
+    }
+
     return (
         <div className="flex flex-col items-center justify-center w-full h-full gap-4 p-1 pt-5 xl:pt-16 xl:justify-start sm:p-4 xl:p-12">
+            <Modal backdrop="opaque"
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader>
+                                <h3>Confirmar eliminación</h3>
+                            </ModalHeader>
+                            <ModalBody>
+                                <p>¿Está seguro de eliminar este pedido?</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button auto color="danger" onPress={() => handleDeletePedido(onClose)}>
+                                    Eliminar
+                                </Button>
+                                <Button auto color="primary" onPress={onClose}>
+                                    Cancelar
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
             <h1 className="text-4xl">Lista de pedidos</h1>
             <div className="flex flex-col items-center justify-center w-full gap-4">
                 <div className="flex justify-between w-full">
