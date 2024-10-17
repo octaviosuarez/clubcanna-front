@@ -15,6 +15,7 @@ import Plantas from "../Plantas";
 import Alimentacion from "../Plantas/Alimentacion";
 import Deudores from "../Deudores";
 import { obtenerClubId } from "../../api/api";
+import { getClubName } from "../../utils/functions";
 
 function RoutesManager() {
   const location = useLocation();
@@ -43,8 +44,7 @@ function RoutesManager() {
   }, []);
 
   useEffect(() => {
-    //let actualClubName = window.location.pathname.split('/')[1];
-    const actualClubName = 'atahualpa';
+    const actualClubName = getClubName(window.location.href);
     obtenerClubId(actualClubName).then((res) => {
       if (res?.data?.length > 0) {
         setClubId(res.data[0].id);
