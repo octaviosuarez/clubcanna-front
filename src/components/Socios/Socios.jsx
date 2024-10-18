@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ModalContent, useDisclosure } from '@nextui-org/react';
 import { obtenerSocios, eliminarSocio } from '../../api/api';
 import { TbTrash } from 'react-icons/tb';
+import { toast } from 'react-toastify';
 
 const Socios = () => {
 
@@ -37,9 +38,10 @@ const Socios = () => {
     }
 
     const handleDeleteUser = (onClose) => {
-        eliminarSocio(userToDelete)
+        eliminarSocio({ cedula: userToDelete })
             .then(() => {
                 setSocios(socios.filter(s => s.cedula !== userToDelete));
+                toast.warning('Usuario eliminado')
             })
             .catch(error => console.error("Error al eliminar:", error))
             .finally(() => {
