@@ -47,7 +47,9 @@ function RoutesManager() {
     const actualClubName = getClubName(window.location.href);
     obtenerClubId(actualClubName).then((res) => {
       if (res?.data?.length > 0) {
-        setClubId(res.data[0].id);
+        const club = res.data[0];
+        setClubId(club?.id);
+        document.title = club?.empresa || 'Club';
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
