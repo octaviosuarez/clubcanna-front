@@ -15,7 +15,7 @@ const Socio = () => {
         saldo_negativo: '',
         tipo_de_usuario: 'Socio',
         tipo_socio: 'regular',
-        password: '',
+        clave: '',
     })
     const { cedula } = useParams();
     const navigate = useNavigate();
@@ -66,7 +66,7 @@ const Socio = () => {
                 <p className="w-full mb-2 text-3xl text-center">Datos del socio</p>
                 <Divider />
                 <Input variant="underlined" size={'sm'} placeholder="Ingrese cédula" labelPlacement={'outside'} label="Cédula" onChange={(e) => setUser({ ...user, cedula: e.target.value })} value={user.cedula} />
-                <Input autoComplete="one-time-code" type="password" variant="underlined" size={'sm'} placeholder="Ingrese contraseña" labelPlacement={'outside'} label="Contraseña" onChange={(e) => setUser({ ...user, password: e.target.value })} value={user.password} />
+                <Input autoComplete="one-time-code" type="password" variant="underlined" size={'sm'} placeholder="Ingrese contraseña" labelPlacement={'outside'} label="Contraseña" onChange={(e) => setUser({ ...user, clave: e.target.value })} value={user.clave} />
                 <Input variant="underlined" size={'sm'} placeholder={'Ingrese nombre'} labelPlacement={'outside'} label="Nombre" onChange={(e) => setUser({ ...user, nombre_completo: e.target.value })} value={user.nombre_completo} />
                 <Input variant="underlined" size={'sm'} placeholder="Ingrese email" labelPlacement={'outside'} label="Email" onChange={(e) => setUser({ ...user, email: e.target.value })} value={user.email} />
                 <Input type='text' variant="underlined" size={'sm'} placeholder="Ingrese celular" labelPlacement={'outside'} label="Celular" onChange={(e) => setUser({ ...user, celular: e.target.value })} value={user.celular} />
