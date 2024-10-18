@@ -70,12 +70,12 @@ const sidebarOptions = [
 ];
 
 const Sidebar = ({ isMobile }) => {
-  const { theme, setTheme, userData, setUserData } = useStore();
+  const { theme, setTheme, userData, setUserData, club_name } = useStore();
   const [activeOption, setActiveOption] = useState("socios");
   const userLevel = userData?.level;
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const logoSrc = theme === "dark" ? "/logo_dark.jpg" : "/logo.jpg";
+  const logoSrc = theme === "dark" ? `/${club_name}_dark.webp` : `/${club_name}.webp`;
 
   const iconLight = <TbSunHigh size={25} />;
   const iconDark = <TbMoonFilled size={25} />;

@@ -13,7 +13,7 @@ const tiposDeUsuario = {
 export default function Login() {
     const [user, setUser] = useState('')
     const [password, setPassword] = useState('')
-    const { setUserData, theme } = useStore();
+    const { setUserData, theme, club_name } = useStore();
     const [error, setError] = useState('')
     const navigate = useNavigate();
 
@@ -55,7 +55,7 @@ export default function Login() {
             <form className="w-full max-w-[500px] p-2" onSubmit={handleLogin}>
                 <Card>
                     <CardHeader className="flex flex-col items-center justify-center">
-                        <Image alt="Logo" className="mb-4" src={theme === 'dark' ? '/logo_dark.jpg' : '/logo.jpg'} width={150} />
+                        <Image alt="Logo" className="mb-4" src={theme === 'dark' ? `/${club_name}_dark.webp` : '/${club_name}.webp'} width={150} />
                         <p className="mb-4 text-2xl">Inicio de sesión</p>
                     </CardHeader>
                     <Divider />

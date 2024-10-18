@@ -17,41 +17,48 @@ import Deudores from "../Deudores";
 import { obtenerClubId } from "../../api/api";
 import { getClubName } from "../../utils/functions";
 
+const manageFavicon = (club_name) => {
+  const faviconPath = `/${club_name}.ico`;
+  // Buscar si ya existe un elemento link para el favicon
+  let link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+    // Si no existe, crear uno nuevo
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  }
+
+  // Actualizar el href del link con la nueva ruta del favicon
+  link.href = faviconPath;
+}
+
 function RoutesManager() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const { setClubId } = useStore();
-  const { userData } = useStore();
+  const { setClubId, userData, setClubName, club_name } = useStore();
+
+  if (club_name) manageFavicon(club_name);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
     };
     window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
     const actualClubName = getClubName(window.location.href);
     obtenerClubId(actualClubName).then((res) => {
       if (res?.data?.length > 0) {
         const club = res.data[0];
         setClubId(club?.id);
+        setClubName(club?.usuario);
         document.title = club?.empresa || 'Club';
+        manageFavicon(club?.usuario);
       }
     });
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
