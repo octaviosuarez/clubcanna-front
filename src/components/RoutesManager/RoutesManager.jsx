@@ -46,13 +46,13 @@ function RoutesManager() {
     window.addEventListener("resize", handleResize);
 
     const actualClubName = getClubName(window.location.href);
+    setClubName(actualClubName);
+    manageFavicon(actualClubName);
     obtenerClubId(actualClubName).then((res) => {
       if (res?.data?.length > 0) {
         const club = res.data[0];
         setClubId(club?.id);
-        setClubName(club?.usuario);
         document.title = club?.empresa || 'Club';
-        manageFavicon(club?.usuario);
       }
     });
 
