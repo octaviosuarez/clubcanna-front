@@ -24,8 +24,8 @@ export default function Login() {
         if (!user) return setError('Debe ingresar usuario')
 
         try {
-            const actualClubName = getClubName(window.location.href);
-            let club = obtenerClubId(actualClubName);
+            let actualClubName = getClubName(window.location.href);
+            let club = await obtenerClubId(actualClubName);
             let clubId = club?.data[0]?.id;
             let res = await login({ cedula: user, password, club_id: clubId });
             let userData = {
