@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getSimpleFromLocalStorage } from "../utils/storage";
-const URL = "http://localhost:443";
+const URL = "https://web-production-bc4d.up.railway.app";
 const CLUB_ID = getSimpleFromLocalStorage("club_id");
 
 axios.defaults.baseURL = URL;
