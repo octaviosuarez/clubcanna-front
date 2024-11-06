@@ -3,11 +3,13 @@ import { Input, Button, CardFooter } from "@nextui-org/react";
 import { useState } from "react";
 import useStore from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../api/api";
+import { login, obtenerClubId } from "../../api/api";
+import { getClubName } from "../../utils/functions";
 
 const tiposDeUsuario = {
     'Administrador': 'admin',
-    'Socio': 'user'
+    'Socio': 'user',
+    'Jardinero': 'jardinero'
 }
 
 export default function Login() {
@@ -22,7 +24,10 @@ export default function Login() {
         if (!user) return setError('Debe ingresar usuario')
 
         try {
-            let res = await login({ cedula: user, password });
+            const actualClubName = getClubName(window.location.href);
+            let club = obtenerClubId(actualClubName);
+            let clubId = club?.data[0]?.id;
+            let res = await login({ cedula: user, password, club_id: clubId });
             let userData = {
                 cedula: user,
                 level: 'admin'

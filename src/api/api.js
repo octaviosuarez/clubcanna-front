@@ -19,11 +19,14 @@ export const obtenerClubId = async (clubName) => {
     return axios.request(options);
 }
 
-export const login = async (usuario) => {
+export const login = async (data) => {
     const options = {
         method: "POST",
         url: "/login",
-        data: usuario,
+        data: data,
+        params: {
+            club_id: data.club_id
+        }
     };
     return axios.request(options);
 };
